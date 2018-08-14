@@ -11,7 +11,7 @@ To make the project work, add your own API KEY of themoviedb.org inside MainActi
 
 - - - -
 
-##External Libraries Used:##
+## External Libraries Used: ##
 
 * **Piccasso**: Used for Image loading and caching.
 * **Retrofit**: Used for Network calls using REST API endpoints of themoviedb.org.
