@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Movies Hub</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">Sort By :</string>
+    <string name="text_popular">Most Popular</string>
+    <string name="text_top_rated">Top Rated</string>
+    <string name="image_unavailable">Image not available</string>
+    <string name="plot_summary">Plot Summary</string>
+    <string name="transition_name">Image Transition</string>
+    <string name="movie_poster_description">image of the movie</string>
+    <string name="image_star">Image with star for rating</string>
+    <string name="image_horizontal_line">Image for horizontal line to divide plot summary from other details</string>
+</resources>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/card_margin"
+        android:elevation="3dp"
+        card_view:cardCornerRadius="@dimen/card_radius">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/tv_movie_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/movie_poster_description"
+                android:transitionName="@string/transition_name"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_movie_thumbnail"
+                android:paddingLeft="@dimen/movie_title_padding"
+                android:paddingRight="@dimen/movie_title_padding"
+                android:paddingTop="@dimen/movie_title_padding"
+                android:textColor="@color/movie_title"
+                android:textSize="@dimen/movie_title_text_size"
+                android:gravity="start"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/tv_movie_thumbnail"
+                tools:text="Race 3"/>
+
+            <TextView
+                android:id="@+id/tv_movie_year"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_movie_title"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:paddingBottom="@dimen/year_padding_bottom"
+                android:paddingLeft="@dimen/movie_year_padding"
+                android:paddingRight="@dimen/movie_year_padding"
+                android:textSize="@dimen/year_text_size"
+                card_view:layout_constraintBottom_toBottomOf="parent"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintTop_toBottomOf="@+id/tv_movie_title"
+                card_view:layout_constraintVertical_bias="1.0"
+                tools:text="2017" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/image_star"
+                card_view:layout_constraintBottom_toBottomOf="@+id/tv_movie_year"
+                card_view:layout_constraintEnd_toStartOf="@+id/tv_movie_rating"
+                card_view:layout_constraintTop_toTopOf="@+id/tv_movie_year"
+                card_view:srcCompat="@drawable/ic_star"/>
+
+            <TextView
+                android:id="@+id/tv_movie_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                card_view:layout_constraintBottom_toBottomOf="@+id/tv_movie_year"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintTop_toTopOf="@+id/tv_movie_year"
+                tools:text="7.5"/>
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

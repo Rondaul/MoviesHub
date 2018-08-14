@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_margin"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_margin"
+        android:text="@string/sort_by"
+        android:textColor="#444"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/rg_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vertical_padding">
+
+        <RadioButton
+            android:id="@+id/rb_popular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@drawable/ic_check"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/horizontal_padding"
+            android:paddingEnd="@dimen/vertical_padding"
+            android:paddingStart="@dimen/vertical_padding"
+            android:paddingTop="@dimen/horizontal_padding"
+            android:text="@string/text_popular"
+            android:textSize="@dimen/text_size" />
+
+        <RadioButton
+            android:id="@+id/rb_top_rated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@null"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/horizontal_padding"
+            android:paddingEnd="@dimen/vertical_padding"
+            android:paddingStart="@dimen/vertical_padding"
+            android:paddingTop="@dimen/horizontal_padding"
+            android:text="@string/text_top_rated"
+            android:textSize="@dimen/text_size" />
+    </RadioGroup>
+
+</LinearLayout>
