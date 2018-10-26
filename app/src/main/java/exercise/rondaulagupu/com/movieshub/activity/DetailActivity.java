@@ -1,21 +1,36 @@
 package exercise.rondaulagupu.com.movieshub.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import exercise.rondaulagupu.com.movieshub.R;
+import exercise.rondaulagupu.com.movieshub.adapter.MovieCastAdapter;
 import exercise.rondaulagupu.com.movieshub.adapter.MoviesAdapter;
+import exercise.rondaulagupu.com.movieshub.model.Cast;
+import exercise.rondaulagupu.com.movieshub.model.CastResponse;
+import exercise.rondaulagupu.com.movieshub.rest.RetrofitClient;
+import exercise.rondaulagupu.com.movieshub.rest.RetrofitInterface;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
+
+    private static final String TAG = DetailActivity.class.getSimpleName();
 
     //Butterknife view binding variables
     @BindView(R.id.toolbar)
@@ -34,7 +49,10 @@ public class DetailActivity extends AppCompatActivity {
     ImageView mMovieImageBackgroundImageView;
     @BindView(R.id.iv_movie_poster_details)
     ImageView mMoviePosterImageView;
+    @BindView(R.id.rv_movie_cast)
+    RecyclerView mMovieCastRecyclerView;
 
+    private MovieCastAdapter mMovieCastAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +60,8 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         //Butterknife view binding happens here.
         ButterKnife.bind(this);
+
+        mMovieCastRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
 
         //reduce the alpha or transparency for background image.
         mMovieImageBackgroundImageView.setImageAlpha(128);
@@ -61,8 +81,29 @@ public class DetailActivity extends AppCompatActivity {
         //set the title in toolbar here.
         setTitle(movieTitle);
 
+
+
         //call methods showMovieDetails to set the data to the views.
         showMovieDetails(movieReleaseDate, movieRating, moviePlotSummary, moviePosterPath, movieTitle);
+
+        final RetrofitInterface retrofitInterface = RetrofitClient.getRetrofitClient().create(RetrofitInterface.class);
+        Call<CastResponse> call = retrofitInterface.getCastOfMovie(id, MainActivity.API_KEY);
+        call.enqueue(new Callback<CastResponse>() {
+            @Override
+            public void onResponse(Call<CastResponse> call, Response<CastResponse> response) {
+                List<Cast> casts = response.body().getCast();
+                mMovieCastAdapter = new MovieCastAdapter(casts, DetailActivity.this);
+                mMovieCastRecyclerView.setAdapter(mMovieCastAdapter);
+
+            }
+
+            @Override
+            public void onFailure(Call<CastResponse> call, Throwable t) {
+                Log.e(TAG, t.toString());
+            }
+        });
+
+
     }
 
     //method to set data to view in detail activity layout.

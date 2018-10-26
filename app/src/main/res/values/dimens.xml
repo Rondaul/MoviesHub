@@ -13,4 +13,6 @@
     <dimen name="text_size">16sp</dimen>
     <dimen name="app_bar_height">250dp</dimen>
     <dimen name="expanded_toolbar_title_margin_start">64dp</dimen>
+    <dimen name="cast_text_size">16sp</dimen>
+    <dimen name="cast_title_padding">10dp</dimen>
 </resources>

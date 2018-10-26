@@ -10,4 +10,7 @@
     <string name="movie_poster_description">image of the movie</string>
     <string name="image_star">Image with star for rating</string>
     <string name="image_horizontal_line">Image for horizontal line to divide plot summary from other details</string>
+    <string name="cast_content_description">This is to display the cast of the @string/movie_poster_description</string>
+    <string name="text_favorites">Favorites</string>
+    <string name="cast">Cast</string>
 </resources>

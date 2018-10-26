@@ -57,6 +57,22 @@
             android:paddingTop="@dimen/horizontal_padding"
             android:text="@string/text_top_rated"
             android:textSize="@dimen/text_size" />
+
+        <RadioButton
+            android:id="@+id/favorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableEnd="@null"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="start|center_vertical|end"
+            android:paddingBottom="@dimen/horizontal_padding"
+            android:paddingEnd="@dimen/vertical_padding"
+            android:paddingStart="@dimen/vertical_padding"
+            android:paddingTop="@dimen/horizontal_padding"
+            android:text="@string/text_favorites"
+            android:textSize="@dimen/text_size" />
     </RadioGroup>
 
 </LinearLayout>
