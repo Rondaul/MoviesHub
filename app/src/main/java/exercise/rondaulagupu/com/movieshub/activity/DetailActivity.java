@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -61,6 +63,8 @@ public class DetailActivity extends AppCompatActivity {
     RecyclerView mMovieTrailersRecyclerView;
     @BindView(R.id.rv_movie_reviews)
     RecyclerView mMovieReviewsRecyclerView;
+    @BindView(R.id.like_button)
+    LikeButton mLikeButton;
 
     private MovieCastAdapter mMovieCastAdapter;
     private MovieTrailerAdapter mMovieTrailerAdapter;
@@ -82,6 +86,18 @@ public class DetailActivity extends AppCompatActivity {
 
         //set toolbar as actionbar
         setSupportActionBar(mToolbar);
+
+        mLikeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+
+            }
+        });
 
         //display the up button for back feature
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
