@@ -13,4 +13,8 @@
     <string name="cast_content_description">This is to display the cast of the @string/movie_poster_description</string>
     <string name="text_favorites">Favorites</string>
     <string name="cast">Cast</string>
+    <string name="trailer">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailer_play_icon">Trailer Play Icon</string>
+    <string name="review_des">Image of the Reviewer</string>
 </resources>

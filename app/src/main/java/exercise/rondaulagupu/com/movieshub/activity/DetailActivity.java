@@ -19,9 +19,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import exercise.rondaulagupu.com.movieshub.R;
 import exercise.rondaulagupu.com.movieshub.adapter.MovieCastAdapter;
+import exercise.rondaulagupu.com.movieshub.adapter.MovieReviewsAdapter;
+import exercise.rondaulagupu.com.movieshub.adapter.MovieTrailerAdapter;
 import exercise.rondaulagupu.com.movieshub.adapter.MoviesAdapter;
 import exercise.rondaulagupu.com.movieshub.model.Cast;
 import exercise.rondaulagupu.com.movieshub.model.CastResponse;
+import exercise.rondaulagupu.com.movieshub.model.Review;
+import exercise.rondaulagupu.com.movieshub.model.ReviewsResponse;
+import exercise.rondaulagupu.com.movieshub.model.Trailer;
+import exercise.rondaulagupu.com.movieshub.model.TrailersResponse;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitClient;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitInterface;
 import retrofit2.Call;
@@ -51,8 +57,14 @@ public class DetailActivity extends AppCompatActivity {
     ImageView mMoviePosterImageView;
     @BindView(R.id.rv_movie_cast)
     RecyclerView mMovieCastRecyclerView;
+    @BindView(R.id.rv_movie_trailers)
+    RecyclerView mMovieTrailersRecyclerView;
+    @BindView(R.id.rv_movie_reviews)
+    RecyclerView mMovieReviewsRecyclerView;
 
     private MovieCastAdapter mMovieCastAdapter;
+    private MovieTrailerAdapter mMovieTrailerAdapter;
+    private MovieReviewsAdapter mMovieReviewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,8 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mMovieCastRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        mMovieTrailersRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mMovieReviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         //reduce the alpha or transparency for background image.
         mMovieImageBackgroundImageView.setImageAlpha(128);
@@ -103,6 +117,36 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+
+        Call<TrailersResponse> trailersResponseCall = retrofitInterface.getMovieTrailers(id, MainActivity.API_KEY);
+        trailersResponseCall.enqueue(new Callback<TrailersResponse>() {
+            @Override
+            public void onResponse(Call<TrailersResponse> call, Response<TrailersResponse> response) {
+                List<Trailer> trailers = response.body().getResults();
+                mMovieTrailerAdapter = new MovieTrailerAdapter(trailers, DetailActivity.this);
+                mMovieTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<TrailersResponse> call, Throwable t) {
+                Log.e(TAG, "onFailure: " +  t.toString());
+            }
+        });
+
+        Call<ReviewsResponse> reviewsResponseCall = retrofitInterface.getMovieReviews(id, MainActivity.API_KEY);
+        reviewsResponseCall.enqueue(new Callback<ReviewsResponse>() {
+            @Override
+            public void onResponse(Call<ReviewsResponse> call, Response<ReviewsResponse> response) {
+                List<Review> reviews = response.body().getResults();
+                mMovieReviewsAdapter = new MovieReviewsAdapter(reviews, DetailActivity.this);
+                mMovieReviewsRecyclerView.setAdapter(mMovieReviewsAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<ReviewsResponse> call, Throwable t) {
+                Log.e(TAG, "onFailure: " +  t.toString());
+            }
+        });
 
     }
 

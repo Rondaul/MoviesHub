@@ -15,4 +15,10 @@
     <dimen name="expanded_toolbar_title_margin_start">64dp</dimen>
     <dimen name="cast_text_size">16sp</dimen>
     <dimen name="cast_title_padding">10dp</dimen>
+    <dimen name="max_width">60dp</dimen>
+    <dimen name="max_height">60dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="txt_16">16sp</dimen>
+    <dimen name="txt_20">20sp</dimen>
+    <dimen name="txt_18">18sp</dimen>
 </resources>
