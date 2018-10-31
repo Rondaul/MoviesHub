@@ -16,6 +16,7 @@ To make the project work, add your own API KEY of themoviedb.org inside MainActi
 * **Piccasso**: Used for Image loading and caching.
 * **Retrofit**: Used for Network calls using REST API endpoints of themoviedb.org.
 * **Butterknife**: Used for View Binding.
+* **Android Architecture components(ViewModel, LiveData, Room)**: For caching and storing data locally.
 
     
     
