@@ -3,6 +3,7 @@ package exercise.rondaulagupu.com.movieshub.activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +77,8 @@ public class DetailActivity extends AppCompatActivity {
     RecyclerView mMovieReviewsRecyclerView;
     @BindView(R.id.like_button)
     LikeButton mLikeButton;
+    @BindView(R.id.share)
+    ImageView mShareImageView;
 
     private MovieCastAdapter mMovieCastAdapter;
     private MovieTrailerAdapter mMovieTrailerAdapter;
@@ -82,6 +86,10 @@ public class DetailActivity extends AppCompatActivity {
 
     private MovieDatabase mMovieDatabase;
     private MainViewModel mMainViewModel;
+
+    private RetrofitInterface retrofitInterface;
+
+    private List<Trailer> trailers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +135,18 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        mShareImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(trailers.size() != 0) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_SUBJECT, "Sharing URL");
+                    i.putExtra(Intent.EXTRA_TEXT, MovieTrailerAdapter.YOUTUBE_URL + trailers.get(0).getKey());
+                    startActivity(Intent.createChooser(i, "Share URL"));
+                }
+            }
+        });
 
         mLikeButton.setOnLikeListener(new OnLikeListener() {
             @Override
@@ -170,7 +190,7 @@ public class DetailActivity extends AppCompatActivity {
         //call methods showMovieDetails to set the data to the views.
         showMovieDetails(movieReleaseDate, movieRating, moviePlotSummary, moviePosterPath, movieTitle);
 
-        final RetrofitInterface retrofitInterface = RetrofitClient.getRetrofitClient().create(RetrofitInterface.class);
+        retrofitInterface = RetrofitClient.getRetrofitClient().create(RetrofitInterface.class);
         Call<CastResponse> call = retrofitInterface.getCastOfMovie(id, MainActivity.API_KEY);
         call.enqueue(new Callback<CastResponse>() {
             @Override
@@ -192,7 +212,7 @@ public class DetailActivity extends AppCompatActivity {
         trailersResponseCall.enqueue(new Callback<TrailersResponse>() {
             @Override
             public void onResponse(Call<TrailersResponse> call, Response<TrailersResponse> response) {
-                List<Trailer> trailers = response.body().getResults();
+                trailers = response.body().getResults();
                 mMovieTrailerAdapter = new MovieTrailerAdapter(trailers, DetailActivity.this);
                 mMovieTrailersRecyclerView.setAdapter(mMovieTrailerAdapter);
             }
