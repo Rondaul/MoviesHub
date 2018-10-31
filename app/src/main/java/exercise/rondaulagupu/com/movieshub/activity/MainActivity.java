@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = MainActivity.class.getSimpleName();
 
     // insert your themoviedb.org API KEY here
-    public final static String API_KEY = "98c885575a2306f1fc392adc1dc8bbcf";
+    public final static String API_KEY = "";
 
     //Butterknife view binding variables
     @BindView(R.id.moviesRecyclerView)
