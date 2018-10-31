@@ -97,8 +97,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
                     Bundle bundle = new Bundle();
                     bundle.putInt(ID, movie.getId());
                     bundle.putString(MOVIE_TITLE, movie.getTitle());
-                    bundle.putString(MOVIE_RELEASE_DATE, movie.getReleaseDate().substring(0, 4));
-                    bundle.putString(MOVIE_RATING, movie.getVoteAverage().toString());
+                    bundle.putString(MOVIE_RELEASE_DATE, movie.getReleaseDate());
+                    bundle.putDouble(MOVIE_RATING, movie.getVoteAverage());
                     bundle.putString(MOVIE_PLOT_SUMMARY, movie.getOverview());
                     bundle.putString(MOVIE_POSTER_PATH, movie.getPosterPath());
                     Intent intent = new Intent(mContext, DetailActivity.class);

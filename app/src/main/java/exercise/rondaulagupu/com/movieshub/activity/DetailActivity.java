@@ -1,6 +1,10 @@
 package exercise.rondaulagupu.com.movieshub.activity;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,12 +14,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,14 +30,18 @@ import exercise.rondaulagupu.com.movieshub.adapter.MovieCastAdapter;
 import exercise.rondaulagupu.com.movieshub.adapter.MovieReviewsAdapter;
 import exercise.rondaulagupu.com.movieshub.adapter.MovieTrailerAdapter;
 import exercise.rondaulagupu.com.movieshub.adapter.MoviesAdapter;
+import exercise.rondaulagupu.com.movieshub.database.MovieDatabase;
 import exercise.rondaulagupu.com.movieshub.model.Cast;
 import exercise.rondaulagupu.com.movieshub.model.CastResponse;
+import exercise.rondaulagupu.com.movieshub.model.Movie;
 import exercise.rondaulagupu.com.movieshub.model.Review;
 import exercise.rondaulagupu.com.movieshub.model.ReviewsResponse;
 import exercise.rondaulagupu.com.movieshub.model.Trailer;
 import exercise.rondaulagupu.com.movieshub.model.TrailersResponse;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitClient;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitInterface;
+import exercise.rondaulagupu.com.movieshub.view_model.MainViewModel;
+import exercise.rondaulagupu.com.movieshub.view_model.ViewModelFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,6 +80,9 @@ public class DetailActivity extends AppCompatActivity {
     private MovieTrailerAdapter mMovieTrailerAdapter;
     private MovieReviewsAdapter mMovieReviewsAdapter;
 
+    private MovieDatabase mMovieDatabase;
+    private MainViewModel mMainViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +90,20 @@ public class DetailActivity extends AppCompatActivity {
         //Butterknife view binding happens here.
         ButterKnife.bind(this);
 
-        mMovieCastRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        setSupportActionBar(mToolbar);
+
+        //display the up button for back feature
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        int id = getIntent().getExtras().getInt(MoviesAdapter.ID);
+        String movieTitle = getIntent().getExtras().getString(MoviesAdapter.MOVIE_TITLE);
+        String movieReleaseDate = getIntent().getExtras().getString(MoviesAdapter.MOVIE_RELEASE_DATE);
+        Double movieRating = getIntent().getExtras().getDouble(MoviesAdapter.MOVIE_RATING);
+        String moviePlotSummary = getIntent().getExtras().getString(MoviesAdapter.MOVIE_PLOT_SUMMARY);
+        String moviePosterPath = getIntent().getExtras().getString(MoviesAdapter.MOVIE_POSTER_PATH);
+
+        mMovieDatabase = MovieDatabase.getInstance(DetailActivity.this);
+        mMainViewModel = ViewModelProviders.of(this, new ViewModelFactory(mMovieDatabase, id)).get(MainViewModel.class);
+        mMovieCastRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mMovieTrailersRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mMovieReviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -87,30 +113,58 @@ public class DetailActivity extends AppCompatActivity {
         //set toolbar as actionbar
         setSupportActionBar(mToolbar);
 
+        final Movie movie = new Movie(id, moviePosterPath, moviePlotSummary, movieReleaseDate, movieTitle, movieRating);
+
+        LiveData<Movie> movieLiveData = mMainViewModel.getMovie();
+        movieLiveData.observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(@Nullable Movie movie) {
+                if(movie != null) {
+                    mLikeButton.setLiked(true);
+                } else {
+                    mLikeButton.setLiked(false);
+                }
+            }
+        });
+
+
         mLikeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
-
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMovieDatabase.moviesDao().insertMovie(movie);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(DetailActivity.this, "Added to favorites!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
             }
 
             @Override
             public void unLiked(LikeButton likeButton) {
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMovieDatabase.moviesDao().deleteMovie(movie);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(DetailActivity.this, "Deleted from favorites!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
 
             }
         });
 
-        //display the up button for back feature
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        int id = getIntent().getExtras().getInt(MoviesAdapter.ID);
-        String movieTitle = getIntent().getExtras().getString(MoviesAdapter.MOVIE_TITLE);
-        String movieReleaseDate = getIntent().getExtras().getString(MoviesAdapter.MOVIE_RELEASE_DATE);
-        String movieRating = getIntent().getExtras().getString(MoviesAdapter.MOVIE_RATING);
-        String moviePlotSummary = getIntent().getExtras().getString(MoviesAdapter.MOVIE_PLOT_SUMMARY);
-        String moviePosterPath = getIntent().getExtras().getString(MoviesAdapter.MOVIE_POSTER_PATH);
-
         //set the title in toolbar here.
         setTitle(movieTitle);
-
 
 
         //call methods showMovieDetails to set the data to the views.
@@ -145,7 +199,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TrailersResponse> call, Throwable t) {
-                Log.e(TAG, "onFailure: " +  t.toString());
+                Log.e(TAG, "onFailure: " + t.toString());
             }
         });
 
@@ -160,14 +214,14 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ReviewsResponse> call, Throwable t) {
-                Log.e(TAG, "onFailure: " +  t.toString());
+                Log.e(TAG, "onFailure: " + t.toString());
             }
         });
 
     }
 
     //method to set data to view in detail activity layout.
-    private void showMovieDetails(String movieReleaseDate, String movieRating, String moviePlotSummary, String moviePosterPath, String movieTitle) {
+    private void showMovieDetails(String movieReleaseDate, Double movieRating, String moviePlotSummary, String moviePosterPath, String movieTitle) {
         Picasso
                 .get()
                 .load(MoviesAdapter.POSTER_BASE_PATH + moviePosterPath)
@@ -184,9 +238,9 @@ public class DetailActivity extends AppCompatActivity {
 
         mMovieTitleTextView.setText(movieTitle);
 
-        mMovieYearTextView.setText(movieReleaseDate);
+        mMovieYearTextView.setText(movieReleaseDate.substring(0, 4));
 
-        mMovieRatingTextView.setText(movieRating);
+        mMovieRatingTextView.setText(movieRating.toString());
 
         mPlotSummaryTextView.setText(moviePlotSummary);
     }

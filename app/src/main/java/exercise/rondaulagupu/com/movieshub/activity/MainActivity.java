@@ -1,10 +1,14 @@
 package exercise.rondaulagupu.com.movieshub.activity;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,10 +29,13 @@ import butterknife.ButterKnife;
 import exercise.rondaulagupu.com.movieshub.R;
 import exercise.rondaulagupu.com.movieshub.adapter.MoviesAdapter;
 import exercise.rondaulagupu.com.movieshub.broadcast_receiver.NetworkBroadCastReceiver;
+import exercise.rondaulagupu.com.movieshub.database.MovieDatabase;
 import exercise.rondaulagupu.com.movieshub.model.Movie;
 import exercise.rondaulagupu.com.movieshub.model.MoviesResponse;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitClient;
 import exercise.rondaulagupu.com.movieshub.rest.RetrofitInterface;
+import exercise.rondaulagupu.com.movieshub.view_model.MainViewModel;
+import exercise.rondaulagupu.com.movieshub.view_model.ViewModelFactory;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,12 +57,17 @@ public class MainActivity extends AppCompatActivity{
     RadioButton popularRadioButton;
     @BindView(R.id.rb_top_rated)
     RadioButton topRatedRadioButton;
+    @BindView(R.id.favorites)
+    RadioButton favoritesRadioButton;
 
     //BottomSheetBehavior variable for bottomsheet animation
     private BottomSheetBehavior sheetBehavior;
 
     //BroadcastReceiver for internet connection
     private NetworkBroadCastReceiver networkBroadCastReceiver;
+
+    private MovieDatabase mMovieDatabase;
+    private MainViewModel mMainViewModel;
 
     //Adapter for recyclerview
     MoviesAdapter moviesAdapter;
@@ -84,6 +96,9 @@ public class MainActivity extends AppCompatActivity{
             Toast.makeText(getApplicationContext(), "Please obtain your API KEY from themoviedb.org first!", Toast.LENGTH_LONG).show();
             return;
         }
+
+        mMovieDatabase = MovieDatabase.getInstance(MainActivity.this);
+        mMainViewModel = ViewModelProviders.of(this, new ViewModelFactory(mMovieDatabase)).get(MainViewModel.class);
 
         //Initialize the sheetBehavior for bottom sheet animation here.
         sheetBehavior = BottomSheetBehavior.from(mBottomSheetLayout);
@@ -149,6 +164,7 @@ public class MainActivity extends AppCompatActivity{
                     sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     popularRadioButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check, 0);
                     topRatedRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                    favoritesRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
                     Call<MoviesResponse> call = retrofitInterface.getMostPopularMovies(API_KEY);
                     call.enqueue(new Callback<MoviesResponse>() {
                         @Override
@@ -169,6 +185,7 @@ public class MainActivity extends AppCompatActivity{
                     sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     topRatedRadioButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check, 0);
                     popularRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                    favoritesRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
                     Call<MoviesResponse> call = retrofitInterface.getTopRatedMovies(API_KEY);
                     call.enqueue(new Callback<MoviesResponse>() {
                         @Override
@@ -183,6 +200,23 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void onFailure(Call<MoviesResponse> call, Throwable t) {
                             Log.e(TAG, t.toString());
+                        }
+                    });
+                } else if(checkedId == R.id.favorites) {
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    favoritesRadioButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check, 0);
+                    popularRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                    topRatedRadioButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+                    LiveData<List<Movie>> movies = mMainViewModel.getMovies();
+                    movies.observe(MainActivity.this, new Observer<List<Movie>>() {
+                        @Override
+                        public void onChanged(@Nullable List<Movie> movies) {
+                            if(movies.size() == 0) {
+                                Toast.makeText(getApplicationContext(), "No items added to favorites!", Toast.LENGTH_SHORT).show();
+                            }
+                            moviesAdapter = new MoviesAdapter(movies, MainActivity.this);
+                            moviesAdapter.notifyDataSetChanged();
+                            mRecyclerView.setAdapter(moviesAdapter);
                         }
                     });
                 }
