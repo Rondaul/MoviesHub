@@ -13,6 +13,11 @@
         android:layout_height="match_parent"/>
 
     <include
+        layout="@layout/empty_favorite_layout"
+        android:id="@+id/empty_favorite_layout"
+        android:visibility="gone"/>
+
+    <include
         layout="@layout/bottom_sheet_sort"/>
 
 </android.support.design.widget.CoordinatorLayout>

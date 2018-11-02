@@ -17,4 +17,5 @@
     <string name="reviews">Reviews</string>
     <string name="trailer_play_icon">Trailer Play Icon</string>
     <string name="review_des">Image of the Reviewer</string>
+    <string name="no_item">No items in favorites.\nAdd Your favorite movie from Details page.</string>
 </resources>
